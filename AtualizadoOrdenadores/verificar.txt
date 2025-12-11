@@ -1,0 +1,78 @@
+Verificar porque o RadixSort está saindo daqui
+
+"RADIX SORT (base 10) ? n=100
+Passo 0: [15, 59, 4, 89, 11, 56, 3, 24, 75, 30, 88, 75, 35, 15, 62, 52, 55, 46, 18, 22, 56, 95, 62, 96, 78, 62, 63, 17, 28, 74, ... (n=100)]      
+Passo 1: [30, 80, 70, 90, 50, 11, 81, 71, 41, 81, 61, 11, 91, 81, 21, 11, 62, 52, 22, 62, 62, 92, 62, 62, 2, 12, 62, 42, 82, 3, ... (n=100)]  // após dígito exp=1 (base=10)
+Passo 2: [2, 3, 4, 6, 6, 6, 7, 9, 11, 11, 11, 12, 14, 15, 15, 16, 17, 17, 18, 19, 21, 22, 23, 23, 24, 25, 25, 28, 30, 33, ... (n=100)]  // após dígito exp=10 (base=10)
+--------- final (vetor ordenado) ------------
+[2, 3, 4, 6, 6, 6, 7, 9, 11, 11, 11, 12, 14, 15, 15, 16, 17, 17, 18, 19, 21, 22, 23, 23, 24, 25, 25, 28, 30, 33, ... (n=100)]
+  tempo 1: 0.054 ms
+  tempo 2: 0.049 ms
+  tempo 3: 0.064 ms
+  tempo 4: 0.040 ms
+  tempo 5: 0.046 ms
+  média: 0.050 ms"
+
+Pedi para sair até 10 passos, sera que é aqui que entra o "CountingSort"
+
+
+Erro no codigo : nas opções 
+"System.out.println("4) Shell Sort");
+System.out.println("5) Heap Sort");"
+
+"== Demonstração passo a passo ==
+Escolha o tamanho do vetor (aleatório):
+1) 100
+2) 1.000
+3) 10.000
+4) 100.000
+5) 1.000.000
+6) Outro (digitar)
+Opção: 1
+Seed base [padrão 42]: 42
+Máx. passos [padrão 20]: 20
+Repetições para medir tempo [padrão 5]: 5"
+
+-> Erro está aqui, o codigo não está gerando somente os 20 primeiros
+passos, ele está gerando todos passos
+
+"Passo 587: [2, 3, 4, 6, 6, 6, 7, 9, 11, 11, 11, 12, 14, 15, 15, 16, 17, 17, 18, 19, 21, 22, 23, 23, 24, 25, 25, 28, 30, 33, ... (n=100)]  // swap raiz com 1"
+
+Precisamos ajustar aqui para ele apresentar o numero de passos que o usuario pedir
+
+-> Problema resolvido 
+
+"public static void demoShell(Integer[] a, ColetorPassos passos, int atrasoMs) { 
+    final int n = a.length; 
+    if (n < 2) { 
+        passos.passo(a, "início/fim"); 
+        return; } 
+    int[] gaps = ciuraGapsUpTo(n); 
+    passos.passo(a, "início"); 
+    for (int g = gaps.length - 1; g >= 0; g--) { 
+        int h = gaps[g]; 
+        passos.passo(a, "gap h=" + h); 
+        for (int i = h; i < n; i++) { 
+            int key = a[i]; 
+            int j = i; 
+                while (j >= h && a[j - h] > key) { 
+                    a[j] = a[j - h]; j -= h; 
+                    passos.passo(a.clone(), "move j=" + j + " (h=" + h + ")"); 
+                    if (atrasoMs > 0) 
+                    sleep(atrasoMs); } 
+                a[j] = key; 
+                passos.passo(a.clone(), "insere key em j=" + j + " (h=" + h + ")"); 
+                if (atrasoMs > 0) 
+                sleep(atrasoMs); 
+                } 
+            } 
+            passos.passo(a, "fim"); 
+            }"
+
+"java.util.function.BiFunction<Integer[], String, Boolean> emit = (arr, desc) -> {
+        if (passos >= maxPassos) return false;
+        out.passo(arr.clone(), desc);
+        passos++;
+        return passos < maxPassos;
+    };"
+
